@@ -1,0 +1,33 @@
+{
+  "summary": "Backend regression for CreatorGuard AI PKCE fix. All 12 pytest tests PASSED in 10.57s (4 new PKCE tests + 8 preserved from iteration 1). Verified: (1) /api/oauth/gmail/login authorize_url now carries code_challenge + code_challenge_method=S256, (2) oauth_states doc persists a valid 43-128 char RFC-7636 code_verifier per login, (3) two logins for same user_id yield distinct states with distinct code_verifiers, (4) THE CRITICAL FIX: /api/oauth/gmail/callback with a valid state + junk code now returns 307 -> gmail=error&reason=token_exchange_failed instead of the pre-fix 500 InvalidGrantError('Missing code verifier'). State is single-use and cleared after callback. Regression paths (access_denied redirect, missing_params redirect, bogus-state 400, /api/analyze full verdict, /api/gmail/status + /api/gmail/settings) still green.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_creatorguard_backend.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "gmail_integration.py callback: try/except around fetch_token uses bare `Exception` — this is intentional and correct here (any oauthlib error must become a controlled redirect). Consider logging the redacted state so incident correlation is easier.",
+    "code_verifier is stored plaintext in Mongo (oauth_states). It's short-lived (10 min TTL) and single-use, so risk is low; but if you ever raise OAUTH_STATE_TTL_SEC significantly, consider encrypting or at least indexing with a TTL so stale rows GC.",
+    "oauth_states collection has no MongoDB TTL index — expired states are only deleted when consumed. Abandoned logins (user closes tab) leave rows forever. Add: db.oauth_states.create_index('expires_at', expireAfterSeconds=0) after normalizing expires_at to a Date field (currently ISO string, which TTL indexes cannot use).",
+    "getattr(flow, 'code_verifier', None) will silently fall back to None if google-auth-oauthlib ever changes the attribute name — consider asserting non-null so PKCE misconfig fails loud rather than silently disabling PKCE."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_creatorguard_backend.py (added TestPKCECodeVerifier + TestCallbackTokenExchangeHardening classes, +4 tests, +motor/urllib imports)"
+  ],
+  "success_rate": {"backend": "100% (12/12)", "frontend": "not tested (per request)"},
+  "test_credentials": "None extra — EMERGENT_LLM_KEY and GOOGLE_CLIENT_ID/SECRET already in backend/.env",
+  "seed_data_creation": "Each test uses a random UUID-based user_id; oauth_states rows are consumed/expired naturally within the test — no persistent seed.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "PKCE fix fully verified via pytest at /app/backend/tests/test_creatorguard_backend.py. Real end-to-end OAuth (Google login + real code exchange) cannot be tested from a pod — Google's token endpoint rejects synthetic codes. The bogus-code test intentionally exercises the token-exchange failure branch to prove the try/except redirect works. Backend logs still show pre-fix errors (Missing code verifier + 500) from before E1's fix; only the current-run 'Malformed auth code' entry (redirected cleanly) is relevant. If the user still sees a 500 after this iteration, check: (a) they're on the redeployed backend, not a stale worker, (b) GOOGLE_REDIRECT_URI in .env matches the URI registered in Google Cloud Console.",
+  "rca of the issue": "Original 500 was oauthlib.oauth2.rfc6749.errors.InvalidGrantError('Missing code verifier'). Google-auth-oauthlib enables PKCE by default: Flow.authorization_url() generates a random code_verifier, derives code_challenge=BASE64URL(SHA256(verifier)), and sends the challenge to Google. Google stores the challenge; on token exchange it requires the original verifier back. E1's callback created a NEW Flow instance (fresh verifier), so Google's stored challenge no longer matched → InvalidGrantError bubbled to a 500. Fix: (1) capture flow.code_verifier at login time and persist alongside state in db.oauth_states, (2) in callback, reattach flow.code_verifier = state_doc['code_verifier'] before fetch_token, (3) wrap fetch_token in try/except so any future OAuth exception becomes a controlled redirect (reason=token_exchange_failed) rather than a 500. All three fixes verified by the new tests."
+}
