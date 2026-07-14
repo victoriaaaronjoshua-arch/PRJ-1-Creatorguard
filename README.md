@@ -103,14 +103,21 @@ The app will be available at `http://localhost:3000`.
 - [ ] Contract clause extraction (usage rights, exclusivity, payment terms)
 - [ ] Cross-user brand reputation signals
 - [ ] Browser extension for non-Gmail inboxes
+
 Team
+
       Team Name: Nova Nexus
 
 Team Members
+
       .Ponarul M
+      
       .Bhagayashree M S
+      
       .Akarshana K
+      
       .Aaron Joshua Victoria W
+      
 
 
 ## License
