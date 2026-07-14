@@ -103,7 +103,7 @@ const ShareCard = React.forwardRef(({ verdict }, ref) => {
               <div style={{ fontSize: '32px', color: '#64748b', marginBottom: '18px', fontFamily: 'Geist Mono, monospace' }}>/10</div>
             </div>
             <div style={{ marginTop: '10px', fontSize: '14px', color: '#64748b', fontFamily: 'Geist Mono, monospace' }}>
-              analyzed · claude-sonnet-4.5
+              analyzed · gemini-2.5-flash
             </div>
           </div>
         </div>
@@ -251,7 +251,7 @@ export default function ShareVerdictButton({ verdict }) {
         data-testid="share-btn"
         onClick={handleShare}
         disabled={busy}
-        className="inline-flex items-center gap-2 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-semibold px-3.5 py-2 text-sm disabled:opacity-60 transition-colors"
+        className="inline-flex items-center gap-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold px-3.5 py-2 text-sm disabled:opacity-60 transition-colors shadow-sm"
       >
         {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share2 className="h-4 w-4" />}
         Share verdict
@@ -260,7 +260,7 @@ export default function ShareVerdictButton({ verdict }) {
         data-testid="download-btn"
         onClick={handleDownload}
         disabled={busy}
-        className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] text-slate-200 font-medium px-3.5 py-2 text-sm disabled:opacity-60 transition-colors"
+        className="inline-flex items-center gap-2 rounded-xl border border-violet-200 bg-violet-50 hover:bg-violet-100 text-violet-700 font-medium px-3.5 py-2 text-sm disabled:opacity-60 transition-colors"
       >
         <Download className="h-4 w-4" />
         Download PNG
@@ -269,10 +269,10 @@ export default function ShareVerdictButton({ verdict }) {
         data-testid="copy-btn"
         onClick={handleCopy}
         disabled={busy}
-        className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] text-slate-200 font-medium px-3.5 py-2 text-sm disabled:opacity-60 transition-colors"
+        className="inline-flex items-center gap-2 rounded-xl border border-violet-200 bg-violet-50 hover:bg-violet-100 text-violet-700 font-medium px-3.5 py-2 text-sm disabled:opacity-60 transition-colors"
         title="Copy PNG to clipboard"
       >
-        {copied ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
+        {copied ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
         {copied ? 'Copied!' : 'Copy'}
       </button>
 

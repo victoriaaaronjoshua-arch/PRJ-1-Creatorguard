@@ -44,7 +44,7 @@ GOOGLE_SCOPES = [
     "https://www.googleapis.com/auth/userinfo.profile",
 ]
 
-OAUTH_STATE_TTL_SEC = 600  # 10 minutes
+OAUTH_STATE_TTL_SEC = 1800  # 10 minutes
 
 
 def _client_config() -> dict:
@@ -460,7 +460,7 @@ def build_gmail_router(db, analyze_pitch) -> APIRouter:
                 "flags": parsed.get("flags", []),
                 "actions": parsed.get("actions", []),
                 "replied": False,
-                "model": "claude-sonnet-4-5-20250929",
+                "model": "gemini-2.5-flash",
             }
             await db.gmail_scans.insert_one(doc)
             new_count += 1

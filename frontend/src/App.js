@@ -412,7 +412,7 @@ const InputPanel = ({ text, setText, onAnalyze, loading, error, onPdfFile, pdfSt
       <div className="flex items-center justify-between text-[11px] text-slate-500 mono">
         <span className="flex items-center gap-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
-          Powered by Claude Sonnet 4.5
+          Powered by Gemini 2.5 Flash
         </span>
         <span>SOC-2 · GDPR</span>
       </div>
@@ -703,7 +703,7 @@ const ScanningPanel = () => (
         Analyzing 47 risk vectors...
       </h3>
       <p className="text-sm text-slate-500 mt-2">
-        Claude Sonnet 4.5 is reading your pitch line by line.
+        Gemini 2.5 Flashis reading your pitch line by line.
       </p>
     </div>
     <div className="flex items-center gap-1.5">
@@ -980,7 +980,7 @@ export default function App() {
           <footer className="mt-10 pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mono text-[11px] text-slate-500">
             <div className="flex items-center gap-2">
               <ShieldCheck className="h-3.5 w-3.5 text-violet-600" />
-              CreatorGuard AI · powered by Claude Sonnet 4.5
+              CreatorGuard AI · Powered by Gemini 2.5 Flash
             </div>
             <div className="flex items-center gap-4">
               <span>© 2026 CreatorGuard Labs</span>
